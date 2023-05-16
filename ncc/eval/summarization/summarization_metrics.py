@@ -68,7 +68,7 @@ def eval_accuracies(hypotheses, references, sources=None, filename=None, mode='d
             print(json.dumps(logobj), file=fw)
 
     if fw: fw.close()
-
+    # print(f"sbleu: {sbleu}, bleu4: {bleu4}, rouge_l: {rouge_l}, meteor: {meteor}")
     sbleu, bleu4, rouge_l, meteor = map(lambda score: round(score * 100, 2), (sbleu, bleu4, rouge_l, meteor))
     if smoothed_blue:
         return bleu4, rouge_l, meteor, sbleu

@@ -20,7 +20,7 @@ common:
   threshold_loss_scale: ~ # type=float, help='threshold FP16 loss scale from below'
   empty_cache_freq: 0 # type=int, help='how often to clear the PyTorch CUDA cache (0 to disable)'
   task: summarization # multi-modalities task
-
+  bf16: 0
   seed: 1 # default=1, type=int, metavar='N', help='pseudo random number generator seed'
   cpu: 0 # action='store_true', help='use CPU instead of CUDA'
   fp16: 0 # action='store_true', help='use FP16'
@@ -49,7 +49,7 @@ dataset:
   shard_id: 0 # default=0, type=int, metavar='ID', help='id of the shard to generate (id < num_shards)'
 
 distributed_training:
-  distributed_world_size: 3 # default=max(1, torch.cuda.device_count()
+  distributed_world_size: 1 # default=max(1, torch.cuda.device_count()
   distributed_rank: 0 # default=0, type=int, help='rank of the current worker'
   distributed_backend: nccl # default='nccl', type=str, help='distributed backend'
   distributed_init_method: ~ # default=None, type=str,help='typically tcp://hostname:port that will be used to establish initial connetion'
@@ -75,7 +75,7 @@ task:
   # raw data
 #  data: ~/ncc_data/codexglue/code_to_text/summarization/data-raw # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
   # bin data
-  data: ~/ncc_data/codexglue/code_to_text/summarization/data-mmap/ruby # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
+  data: ~/codexglue/code_to_text/summarization/data-mmap/ruby # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
 
   # for summarization
   source_lang: code.spm
@@ -94,12 +94,12 @@ task:
   eval_bleu: 1 #action='store_true', help='evaluation with BLEU scores'
   eval_bleu_detok: sentencepiece #', type=str, default="space", help='detokenizer before computing BLEU (e.g., "moses"); required if using --eval-bleu; use "space" to disable detokenization; see fairseq.data.encoders for other options'
   eval_bleu_detok_args: #', type=str, metavar='JSON', help='args for building the tokenizer, if needed'
-    sentencepiece_vocab: ~/ncc_data/byte_pair_encoding/csn/csn.spm.model
+    sentencepiece_vocab: ~/byte_pair_encoding/csn/csn.spm.model
   eval_tokenized_bleu: 0 #', action='store_true', default=False, help='if setting, we compute tokenized BLEU instead of sacrebleu'
   eval_bleu_remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE before computing BLEU'
   eval_bleu_args: ~ #', type=str, metavar='JSON', help='generation args for BLUE scoring, e.g., \'{"beam": 4, "lenpen": 0.6}\''
   eval_bleu_print_samples: 0 #', action='store_true', help='print sample generations during validation'
-
+  eval_with_sacrebleu: 0
 
 model:
   arch: seq2seq
@@ -187,7 +187,7 @@ checkpoint:
   best_checkpoint_metric: bleu # type=str, default='loss', help='metric to use for saving "best" checkpoints'
   maximize_best_checkpoint_metric: 1 # action='store_true', help='select the largest metric value for saving "best" checkpoints'
   patience: 10 # type=int, default=-1, metavar='N', help=('early stop training if valid performance doesn\'t improve for N consecutive validation runs; note that this is influenced by --validate-interval')
-  save_dir: ~/ncc_data/codexglue/code_to_text/summarization/data-mmap/ruby/seq2seq/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
+  save_dir: ~/codexglue/code_to_text/summarization/data-mmap/ruby/seq2seq/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
   should_continue: 0 # action="store_true", help="Whether to continue from latest checkpoint in output_dir"
   model_name_or_path: ~ # default=None, type=str, help="The model checkpoint for weights initialization. Leave None if you want to train a model from scratch.",
   cache_dir: ~ # default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)",
@@ -199,8 +199,8 @@ checkpoint:
 
 
 eval:
-  path: ~/ncc_data/codexglue/code_to_text/summarization/data-mmap/ruby/seq2seq/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
-  result_path: ~
+  path: ~/codexglue/code_to_text/summarization/data-mmap/ruby/seq2seq/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
+  result_path: ~/csn_feng/ruby/ 
   remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE tokens before scoring (can be set to sentencepiece)'
   quiet: 0 # ', action='store_true', help='only print final scores'
   model_overrides: '{}' # default="{}", type=str, metavar='DICT', help='a dictionary used to override model args at generation '

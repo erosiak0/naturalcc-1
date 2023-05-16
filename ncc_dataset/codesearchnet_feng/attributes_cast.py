@@ -74,7 +74,7 @@ if __name__ == '__main__':
         "--language", "-l", default=LANGUAGES, type=str, nargs='+', help="languages constain [{}]".format(LANGUAGES),
     )
     parser.add_argument(
-        "--dataset_dir", "-d", default=RAW_DATA_DIR, type=str, help="raw dataset download directory",
+        "--dataset_dir", "-d", default="/home/erosiak/data_naturalcc/codesearchnet_feng/raw", type=str, help="raw dataset download directory",
     )
     parser.add_argument(
         "--flatten_dir", "-f", default=ATTRIBUTES_DIR, type=str,

@@ -35,7 +35,7 @@ dataset:
   num_workers: 3 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
   skip_invalid_size_inputs_valid_test: 1 # action='store_true', help='ignore too long or too short lines in valid and test set'
   max_tokens: ~ # type=int, metavar='N', help='maximum number of tokens in a batch'
-  max_sentences: 64 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
+  max_sentences: 32 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
   required_batch_size_multiple: 1 # default=8, type=int, metavar='N', help='batch size will be a multiplier of this value'
 #  dataset_impl: raw # choices=get_available_dataset_impl(), help='output dataset implementation'
   dataset_impl: mmap # choices=get_available_dataset_impl(), help='output dataset implementation'
@@ -45,7 +45,7 @@ dataset:
   fixed_validation_seed: ~ # default=None, type=int, metavar='N', help='specified random seed for validation'
   disable_validation: 0 # action='store_true',help='disable validation'
   max_tokens_valid: ~ # type=int, metavar='N', help='maximum number of tokens in a validation batch (defaults to --max-tokens)'
-  max_sentences_valid: 1024 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
+  max_sentences_valid: 128 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
   curriculum: 0 # default=0, type=int, metavar='N', help='don\'t shuffle batches for first N epochs'
   gen_subset: test # default='test', metavar='SPLIT', help='data subset to generate (train, valid, test)'
   num_shards: 1 # default=1, type=int, metavar='N', help='shard generation over N shards'
@@ -76,7 +76,7 @@ distributed_training:
 
 
 task:
-  data: ~/ncc_data/python_wan/summarization/data-mmap # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
+  data: ~/python_wan/summarization/data-mmap # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
 
   # for summarization
   source_lang: code_tokens
@@ -87,8 +87,8 @@ task:
   max_source_positions: 400 #', default=1024, type=int, metavar='N', help='max number of tokens in the source sequence'
   max_target_positions: 32 #', default=1024, type=int, metavar='N', help='max number of tokens in the target sequence'
   upsample_primary: 1 #', default=1, type=int, help='amount to upsample primary dataset'
-  truncate_source: 1 #', action='store_true', default=False, help='truncate source to max-source-positions'
-  truncate_target: 1 #', action='store_true', default=False, help='truncate source to max-target-positions'
+  truncate_source: 5 #', action='store_true', default=False, help='truncate source to max-source-positions'
+  truncate_target: 5 #', action='store_true', default=False, help='truncate source to max-target-positions'
 
   # options for reporting BLEU during validation
   eval_bleu: 1 #action='store_true', help='evaluation with BLEU scores'
@@ -97,7 +97,7 @@ task:
   eval_tokenized_bleu: 0 #', action='store_true', default=False, help='if setting, we compute tokenized BLEU instead of sacrebleu'
   eval_bleu_remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE before computing BLEU'
   eval_bleu_args: ~ #', type=str, metavar='JSON', help='generation args for BLUE scoring, e.g., \'{"beam": 4, "lenpen": 0.6}\''
-  eval_bleu_print_samples: 0 #', action='store_true', help='print sample generations during validation'
+  eval_bleu_print_samples: 1 #', action='store_true', help='print sample generations during validation'
 
 model:
   arch: neural_transformer
@@ -225,7 +225,7 @@ checkpoint:
   best_checkpoint_metric: bleu # type=str, default='loss', help='metric to use for saving "best" checkpoints'
   maximize_best_checkpoint_metric: 1 # action='store_true', help='select the largest metric value for saving "best" checkpoints'
   patience: -1 # type=int, default=-1, metavar='N', help=('early stop training if valid performance doesn\'t improve for N consecutive validation runs; note that this is influenced by --validate-interval')
-  save_dir: ~/ncc_data/python_wan/summarization/data-mmap/relative_transformer/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
+  save_dir: ~/python_wan/summarization/data-mmap/relative_transformer/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
   should_continue: 0 # action="store_true", help="Whether to continue from latest checkpoint in output_dir"
   model_name_or_path: ~ # default=None, type=str, help="The model checkpoint for weights initialization. Leave None if you want to train a model from scratch.",
   cache_dir: ~ # default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)",
@@ -237,23 +237,23 @@ checkpoint:
 
 
 eval:
-  path: ~/ncc_data/python_wan/summarization/data-mmap/relative_transformer/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
+  path: ~/python_wan/summarization/data-mmap/relative_transformer/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
   remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE tokens before scoring (can be set to sentencepiece)'
   quiet: 0 # ', action='store_true', help='only print final scores'
-  results_path: ~ # ', metavar='RESDIR', type=str, default=None, help='path to save eval results (optional)"'
+  results_path: ~/python_wan/ # ', metavar='RESDIR', type=str, default=None, help='path to save eval results (optional)"'
   model_overrides: '{}' # default="{}", type=str, metavar='DICT', help='a dictionary used to override model args at generation '
 
-  max_sentences: 512 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
-  beam: 1 # ', default=5, type=int, metavar='N', help='beam size')
-  nbest: 1 # ', default=1, type=int, metavar='N', help='number of hypotheses to output')
+  max_sentences: 32 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
+  beam: 5 # ', default=5, type=int, metavar='N', help='beam size')
+  nbest: 31 # ', default=1, type=int, metavar='N', help='number of hypotheses to output')
   max_len_a: 0 #', default=0, type=float, metavar='N', help=('generate sequences of maximum length ax + b, where x is the source length'))
   max_len_b: 30 #', default=200, type=int, metavar='N', help=('generate sequences of maximum length ax + b, where x is the source length'))
-  min_len: 1 # ', default=1, type=float, metavar='N', help=('minimum generation length'))
+  min_len: 10 # ', default=1, type=float, metavar='N', help=('minimum generation length'))
   match_source_len: 0 #', default=False, action='store_true', help=('generations should match the source length'))
   no_early_stop: 1 # ', action='store_true', help='deprecated')
   unnormalized: 0 # ', action='store_true', help='compare unnormalized hypothesis scores')
   no_beamable_mm: 0 # ', action='store_true', help='don\'t use BeamableMM in attention layers')
-  lenpen: 1 # ', default=1, type=float, help='length penalty: <1.0 favors shorter, >1.0 favors longer sentences')
+  lenpen: 1.3 # ', default=1, type=float, help='length penalty: <1.0 favors shorter, >1.0 favors longer sentences')
   unkpen: 0 # ', default=0, type=float, help='unknown word penalty: <0 produces more unks, >0 produces fewer')
   replace_unk: ~ # ', nargs='?', const=True, default=None, help='perform unknown replacement (optionally with alignment dictionary)')
   sacrebleu: 0 # ', action='store_true', help='score with sacrebleu')
@@ -267,7 +267,7 @@ eval:
   diverse_beam_groups: -1 # ', default=-1, type=int, metavar='N', help='number of groups for Diverse Beam Search')
   diverse_beam_strength: 0.5 # ', default=0.5, type=float, metavar='N', help='strength of diversity penalty for Diverse Beam Search')
   diversity_rate: -1.0 # ', default=-1.0, type=float, metavar='N', help='strength of diversity penalty for Diverse Siblings Search')
-  print_alignment: 0 # ', action='store_true', help='if set, uses attention feedback to compute and print alignment to source tokens')
+  print_alignment: 1 # ', action='store_true', help='if set, uses attention feedback to compute and print alignment to source tokens')
   print_step: 0 # ', action='store_true')
   # arguments for iterative refinement generator
   iter_decode_eos_penalty: 0.0 # ', default=0.0, type=float, metavar='N', help='if > 0.0, it penalized early-stopping in decoding.')

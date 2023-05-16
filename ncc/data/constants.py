@@ -4,7 +4,7 @@ MODES = ['train', 'valid', 'test']
 
 RAW = 'raw'
 ATTRIBUTES = 'attributes'
-
+LANGUAGES = ['ruby', 'python', 'java', 'go', 'php', 'javascript']
 PAD = '[PAD]'
 BOS = "<s>"
 EOS = "</s>"

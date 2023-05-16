@@ -4,7 +4,7 @@ preprocess:
   target_lang: docstring_tokens
   only_source: 0
   trainpref: ~/python_wan/attributes/train #", metavar="FP", default=None, help="train file prefix"
-  validpref: ~/python_wan/attributes/valid #", metavar="FP", default=None, help="comma separated, valid file prefixes"
+  validpref: ~/python_wan/attributes/dev #", metavar="FP", default=None, help="comma separated, valid file prefixes"
   testpref:  ~/python_wan/attributes/test  #", metavar="FP", default=None, help="comma separated, test file prefixes"
 
   # raw dataset

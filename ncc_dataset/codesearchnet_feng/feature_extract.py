@@ -344,10 +344,10 @@ if __name__ == '__main__':
         "--languages", "-l", default=LANGUAGES, type=str, nargs='+', help="languages constain [{}]".format(LANGUAGES),
     )
     parser.add_argument(
-        "--attributes_dir", "-d", default=ATTRIBUTES_DIR, type=str, help="data directory of attributes",
+        "--attributes_dir", "-d", default='/home/erosiak/data_naturalcc/codesearchnet_feng/attributes', type=str, help="data directory of attributes",
     )
     parser.add_argument(
-        "--so_dir", "-s", default=LIBS_DIR, type=str, help="library directory of so file",
+        "--so_dir", "-s", default='/home/erosiak/venvs/38_naturalcc/bin', type=str, help="library directory of so file",
     )
     parser.add_argument(
         "--attrs", "-a",

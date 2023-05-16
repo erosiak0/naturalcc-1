@@ -107,10 +107,13 @@ def main(args, out_file=None):
             hypotheses[sample_id] = [hypo_str]
             references[sample_id] = [target_str]
 
-    bleu, rouge_l, meteor, smoothed_blue = summarization_metrics. \
-        eval_accuracies(hypotheses, references, filename=out_file, mode='test', smoothed_blue=True)
-    LOGGER.info(f'BLEU-4: {bleu}\t ROUGE-L: {rouge_l}\t METEOR: {meteor}\t SmoothedBLEU: {smoothed_blue}')
-
+    # bleu, rouge_l, meteor, smoothed_blue = summarization_metrics. \
+    #     eval_accuracies(hypotheses, references, filename=out_file, mode='test', smoothed_blue=True)
+ 
+    # LOGGER.info(f'BLEU-4: {bleu}\t ROUGE-L: {rouge_l}\t METEOR: {meteor}\t SmoothedBLEU: {smoothed_blue}')
+    bleu, rouge_l, meteor = summarization_metrics. \
+        eval_accuracies(hypotheses, references, filename=out_file, mode='test', smoothed_blue=False)
+    LOGGER.info(f'BLEU-4: {bleu}\t ROUGE-L: {rouge_l}\t METEOR: {meteor}')
 
 def cli_main():
     import argparse

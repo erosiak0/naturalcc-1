@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Downloading C# parser file"
-DIR=dataset/stackoverflow
+DIR=dataset/stack_overflow
 FILE=${DIR}/py2x.tar.gz
 tar -zxvf ${FILE}  -C ${DIR}
 rm ${FILE}
@@ -13,8 +13,8 @@ else
   CACHE_DIR=$NCC
 fi
 
-echo "Downloading CodeNN-C# dataset"
-DIR=${CACHE_DIR}/codenn/raw/csharp
+echo "Downloading stackoverflow-C# dataset"
+DIR=${CACHE_DIR}/stack_overflow/raw/csharp
 mkdir -p ${DIR}
 
 modes=(
@@ -29,8 +29,8 @@ wget -O ${DIR}/${modes[idx]}.txt https://raw.githubusercontent.com/sriniiyer/cod
 
 done
 
-echo "Downloading CodeNN-python dataset"
-DIR=${CACHE_DIR}/codenn/raw/python
+echo "Downloading stack_overflow-python dataset"
+DIR=${CACHE_DIR}/stack_overflow/raw/python
 mkdir -p ${DIR}
 
 for (( idx = 0 ; idx < ${#modes[@]} ; idx++ )); do
@@ -39,8 +39,8 @@ wget -O ${DIR}/${modes[idx]}.txt https://raw.githubusercontent.com/sriniiyer/cod
 
 done
 
-echo "Downloading CodeNN-sql dataset"
-DIR=${CACHE_DIR}/codenn/raw/sql
+echo "Downloading stack_overflow-sql dataset"
+DIR=${CACHE_DIR}/stack_overflow/raw/sql
 mkdir -p ${DIR}
 
 for (( idx = 0 ; idx < ${#modes[@]} ; idx++ )); do

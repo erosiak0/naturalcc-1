@@ -285,21 +285,21 @@ class SummarizationTask(NccTask):
                 'try --eval-bleu-detok=moses (or --eval-bleu-detok=space '
                 'to disable detokenization, e.g., when using sentencepiece)'
             )
-            # detok_args = args['task']['eval_bleu_detok_args'] if args['task']['eval_bleu_detok_args'] else '{}'
-            # if args['bpe'] is not None:
-            #     self.tokenizer = tokenizers.build_bpe(
-            #         dict(bpe=args['task'].get('eval_bleu_detok', '{}'), **detok_args)
-            #     )
-            # else:
-            #     self.tokenizer = tokenizers.build_tokenizer(
-            #         dict(tokenizer=args['task'].get('eval_bleu_detok', '{}'), **detok_args)
-            #     )
-            detok_args = json.loads(
-                args['task']['eval_bleu_detok_args'] if args['task']['eval_bleu_detok_args'] else '{}'
-            )
-            self.tokenizer = tokenizers.build_tokenizer(
-                dict(tokenizer=args['task'].get('eval_bleu_detok', '{}'), **detok_args)
-            )
+            detok_args = args['task']['eval_bleu_detok_args'] if args['task']['eval_bleu_detok_args'] else '{}'
+            if args['bpe'] is not None:
+                self.tokenizer = tokenizers.build_bpe(
+                    dict(bpe=args['task'].get('eval_bleu_detok', '{}'), **detok_args)
+                )
+            else:
+                self.tokenizer = tokenizers.build_tokenizer(
+                    dict(tokenizer=args['task'].get('eval_bleu_detok', '{}'), **detok_args)
+                )
+            # detok_args = json.loads(
+            #     args['task']['eval_bleu_detok_args'] if args['task']['eval_bleu_detok_args'] else '{}'
+            # )
+            # self.tokenizer = tokenizers.build_tokenizer(
+            #     dict(tokenizer=args['task'].get('eval_bleu_detok', '{}'), **detok_args)
+            # )
             self.sequence_generator = self.build_generator([model], args)
         return model
 

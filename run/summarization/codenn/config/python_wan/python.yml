@@ -1,6 +1,6 @@
 #registry
 criterion: codenn_cross_entropy
-optimizer: 'sgd'
+optimizer: 'torch_sgd'
 lr_scheduler: 'fixed'
 tokenizer: ~ # default=None
 bpe: ~ # default=None
@@ -20,7 +20,7 @@ common:
   threshold_loss_scale: ~ # type=float, help='threshold FP16 loss scale from below'
   empty_cache_freq: 0 # type=int, help='how often to clear the PyTorch CUDA cache (0 to disable)'
   task: be_summarization # multi-modalities task
-
+  bf16: False
   seed: 1 # default=1, type=int, metavar='N', help='pseudo random number generator seed'
   cpu: 0 # action='store_true', help='use CPU instead of CUDA'
   fp16: 0 # action='store_true', help='use FP16'
@@ -30,19 +30,20 @@ common:
 
 dataset:
   num_workers: 3 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
-  skip_invalid_size_inputs_valid_test: 1 # action='store_true', help='ignore too long or too short lines in valid and test set'
+  skip_invalid_size_inputs_valid_test: 0 # action='store_true', help='ignore too long or too short lines in valid and test set'
   max_tokens: ~ # type=int, metavar='N', help='maximum number of tokens in a batch'
   max_sentences: 100 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
   required_batch_size_multiple: 1 # default=1, type=int, metavar='N', help='batch size will be a multiplier of this value'
 #  dataset_impl: raw # choices=get_available_dataset_impl(), help='output dataset implementation'
   dataset_impl: mmap # choices=get_available_dataset_impl(), help='output dataset implementation'
   train_subset: train # default='train', metavar='SPLIT', help='data subset to use for training (e.g. train, valid, test)'
-  valid_subset: valid # default='valid', metavar='SPLIT', help='comma separated list of data subsets to use for validation (e.g. train, valid, test)'
+  valid_subset: dev # default='valid', metavar='SPLIT', help='comma separated list of data subsets to use for validation (e.g. train, valid, test)'
+  dev_subset: dev 
   validate_interval: 1 # type=int, default=1, metavar='N', help='validate every N epochs'
   fixed_validation_seed: ~ # default=None, type=int, metavar='N', help='specified random seed for validation'
   disable_validation: 0 # action='store_true',help='disable validation'
   max_tokens_valid: ~ # type=int, metavar='N', help='maximum number of tokens in a validation batch (defaults to --max-tokens)'
-  max_sentences_valid: 2048 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
+  max_sentences_valid: 512 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
   curriculum: 0 # default=0, type=int, metavar='N', help='don\'t shuffle batches for first N epochs'
   gen_subset: test # default='test', metavar='SPLIT', help='data subset to generate (train, valid, test)'
   num_shards: 1 # default=1, type=int, metavar='N', help='shard generation over N shards'
@@ -73,7 +74,7 @@ distributed_training:
 
 task:
   # bin data
-  data: ~/.ncc/stack_overflow/summarization/sql/data-mmap # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
+  data: ~/python_wan/summarization/data-mmap # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
 
   # for summarization
   source_lang: code_tokens
@@ -81,11 +82,11 @@ task:
   load_alignments: 0 #', action='store_true', help='load the binarized alignments'
   left_pad_source: 0 #', default='True', type=str, metavar='BOOL', help='pad the source on the left'
   left_pad_target: 0 #', default='False', tydecoder_out_embed_dimpe=str, metavar='BOOL', help='pad the target on the left'
-  max_source_positions: 100 #', default=1024, type=int, metavar='N', help='max number of tokens in the source sequence'
-  max_target_positions: 100 # 100-2, 2 for <bos> and <eos>
+  max_source_positions: 10000 #', default=1024, type=int, metavar='N', help='max number of tokens in the source sequence'
+  max_target_positions: 10000 # 100-2, 2 for <bos> and <eos>
   upsample_primary: 1 #', default=1, type=int, help='amount to upsample primary dataset'
   truncate_source: 1 #', action='store_true', default=False, help='truncate source to max-source-positions'
-  truncate_target: 1 #', action='store_true', default=False, help='truncate target to max-target-positions'
+  truncate_target: 0 #', action='store_true', default=False, help='truncate target to max-target-positions'
   append_eos_to_target: 1 # default=True, append eos to the end of target sentence for summarization task
 
   # options for reporting BLEU during validation
@@ -95,7 +96,7 @@ task:
   eval_tokenized_bleu: 0 #', action='store_true', default=False, help='if setting, we compute tokenized BLEU instead of sacrebleu'
   eval_bleu_remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE before computing BLEU'
   eval_bleu_args: ~ #', type=str, metavar='JSON', help='generation args for BLUE scoring, e.g., \'{"beam": 4, "lenpen": 0.6}\''
-  eval_bleu_print_samples: 0 #', action='store_true', help='print sample generations during validation'
+  eval_bleu_print_samples: 1 #', action='store_true', help='print sample generations during validation'
 
 
 model:
@@ -128,8 +129,8 @@ model:
   decoder_dropout_out: 0.5 #', type=float, metavar='D', help='dropout probability for decoder output'
   # network: decoder
 #  pointer: False # if set true, add pointer-generator for model. TBC
-  max_source_positions: 100
-  max_target_positions: 100
+  max_source_positions: 10000
+  max_target_positions: 10000
 
 
 optimization:
@@ -138,7 +139,7 @@ optimization:
   clip_norm: 5 # default=25, type=float, metavar='NORM', help='clip threshold of gradients'
   update_freq: # default='1', metavar='N1,N2,...,N_K', type=lambda uf: eval_str_list(uf, type=int), help='update parameters every N_i batches, when in epoch i'
     - 1
-  lr: # '--learning-rate', default='0.25', type=eval_str_list, metavar='LR_1,LR_2,...,LR_N', help='learning rate for the first N epochs; all epochs >N using LR_N (note: this may be interpreted differently depending on --lr-scheduler)'
+  lrs: # '--learning-rate', default='0.25', type=eval_str_list, metavar='LR_1,LR_2,...,LR_N', help='learning rate for the first N epochs; all epochs >N using LR_N (note: this may be interpreted differently depending on --lr-scheduler)'
     - 5e-1
   min_lr: 1e-3 # default=-1, type=float, metavar='LR', help='stop training when the learning rate reaches this minimum'
   use_bmuf: 1 # default=False, action='store_true', help='specify global optimizer for syncing models on different GPUs/shards'
@@ -191,7 +192,7 @@ checkpoint:
   best_checkpoint_metric: bleu # type=str, default='loss', help='metric to use for saving "best" checkpoints'
   maximize_best_checkpoint_metric: 1 # action='store_true', help='select the largest metric value for saving "best" checkpoints'
   patience: -1 # type=int, default=-1, metavar='N', help=('early stop training if valid performance doesn\'t improve for N consecutive validation runs; note that this is influenced by --validate-interval')
-  save_dir: ~/.ncc/stack_overflow/summarization/sql/data-mmap/codenn/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
+  save_dir: ~/python_wan/summarization/codenn/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
   should_continue: 0 # action="store_true", help="Whether to continue from latest checkpoint in output_dir"
   model_name_or_path: ~ # default=None, type=str, help="The model checkpoint for weights initialization. Leave None if you want to train a model from scratch.",
   cache_dir: ~ # default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)",
@@ -203,13 +204,13 @@ checkpoint:
 
 
 eval:
-  path: ~/.ncc/stack_overflow/summarization/sql/data-mmap/codenn/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
+  path: ~/python_wan/summarization/codenn/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
   result_path: ~
   remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE tokens before scoring (can be set to sentencepiece)'
   quiet: 0 # ', action='store_true', help='only print final scores'
   model_overrides: '{}' # default="{}", type=str, metavar='DICT', help='a dictionary used to override model args at generation '
 
-  max_sentences: 4048 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
+  max_sentences: 512 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
   beam: 1 # ', default=5, type=int, metavar='N', help='beam size')
   nbest: 1 # ', default=1, type=int, metavar='N', help='number of hypotheses to output')
   max_len_a: 0 #', default=0, type=float, metavar='N', help=('generate sequences of maximum length ax + b, where x is the source length'))

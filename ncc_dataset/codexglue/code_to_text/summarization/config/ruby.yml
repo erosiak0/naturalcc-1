@@ -15,4 +15,4 @@ preprocess:
 
   alignfile: ~ #", metavar="ALIGN", default=None, help="an alignment file (optional)"
   padding_factor: 1 #", metavar="N", default=8, type=int, help="Pad dictionary size to be multiple of N"
-  workers: 10 # ", metavar="N", default=1, type=int, help="number of parallel workers"
+  workers: 1 # ", metavar="N", default=1, type=int, help="number of parallel workers"
