@@ -18,7 +18,7 @@ ATTRIBUTES_DIR = os.path.join(DATASET_DIR, ATTRIBUTES)
 BPE_DIR = __BPE_DIR__
 LIBS_DIR = __TREE_SITTER_LIBS_DIR__
 
-LANGUAGES = ['ruby', 'python', 'java', 'go', 'php', 'javascript']
+LANGUAGES = ['c']
 
 PATH_NUM = 300
 
