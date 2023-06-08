@@ -5,5 +5,5 @@ from ncc import (
     __NCC_DIR__,
 )
 
-DATASET_NAME = 'codexglue'
+DATASET_NAME = 'dante'
 DATASET_DIR = os.path.join(__NCC_DIR__, DATASET_NAME)

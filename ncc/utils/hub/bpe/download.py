@@ -15,6 +15,7 @@ os.makedirs(__BPE_DIR__, exist_ok=True)
 
 BPE_MODEL_ARCHIVE_MAP = {
     "csn": "https://drive.google.com/uc?id=1mJaRffUVvPj2R7bFp8qpCvUsGChtfqQ0",
+    
 }
 
 
