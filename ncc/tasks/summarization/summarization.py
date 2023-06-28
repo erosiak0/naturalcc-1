@@ -329,6 +329,7 @@ class SummarizationTask(NccTask):
         model.train()
         model.set_num_updates(update_num)
         loss, sample_size, logging_output = criterion(model, sample)
+        # print(f"loss.shape: {loss.shape}, {loss}")
         if ignore_grad:
             loss *= 0
         optimizer.backward(loss)

@@ -29,10 +29,10 @@ common:
   server_port: '' # type=str, default="", help="For distant debugging."
 
 dataset:
-  num_workers: 3 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
+  num_workers: 1 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
   skip_invalid_size_inputs_valid_test: 1 # action='store_true', help='ignore too long or too short lines in valid and test set'
   max_tokens: ~ # type=int, metavar='N', help='maximum number of tokens in a batch'
-  max_sentences: 16 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
+  max_sentences: 64 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
   required_batch_size_multiple: 1 # default=8, type=int, metavar='N', help='batch size will be a multiplier of this value'
 #  dataset_impl: raw # choices=get_available_dataset_impl(), help='output dataset implementation'
   dataset_impl: mmap # choices=get_available_dataset_impl(), help='output dataset implementation'
@@ -75,7 +75,7 @@ task:
   # raw data
 #  data: ~/ncc_data/dante/code_to_text/summarization/data-raw # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
   # bin data
-  data: ~/dante/code_to_text/summarization/data-mmap/c # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
+  data: ~/dante2/code_to_text/summarization/data-mmap/c # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
 
   # for summarization
   source_lang: code.spm
@@ -94,7 +94,8 @@ task:
   eval_bleu: 1 #action='store_true', help='evaluation with BLEU scores'
   eval_bleu_detok: sentencepiece #', type=str, default="space", help='detokenizer before computing BLEU (e.g., "moses"); required if using --eval-bleu; use "space" to disable detokenization; see fairseq.data.encoders for other options'
   eval_bleu_detok_args: #', type=str, metavar='JSON', help='args for building the tokenizer, if needed'
-    sentencepiece_vocab: ~/byte_pair_encoding/csn/csn.spm.model
+    sentencepiece_vocab: ~/byte_pair_encoding2/csn/csn.spm.model
+
   eval_tokenized_bleu: 0 #', action='store_true', default=False, help='if setting, we compute tokenized BLEU instead of sacrebleu'
   eval_bleu_remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE before computing BLEU'
   eval_bleu_args: ~ #', type=str, metavar='JSON', help='generation args for BLUE scoring, e.g., \'{"beam": 4, "lenpen": 0.6}\''
@@ -187,7 +188,7 @@ checkpoint:
   best_checkpoint_metric: bleu # type=str, default='loss', help='metric to use for saving "best" checkpoints'
   maximize_best_checkpoint_metric: 1 # action='store_true', help='select the largest metric value for saving "best" checkpoints'
   patience: 30 # type=int, default=-1, metavar='N', help=('early stop training if valid performance doesn\'t improve for N consecutive validation runs; note that this is influenced by --validate-interval')
-  save_dir: ~/dante/code_to_text/summarization/data-mmap/c/seq2seq/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
+  save_dir: ~/dante2/code_to_text/summarization/data-mmap/c/seq2seq/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
   should_continue: 1 # action="store_true", help="Whether to continue from latest checkpoint in output_dir"
   model_name_or_path: ~ # default=None, type=str, help="The model checkpoint for weights initialization. Leave None if you want to train a model from scratch.",
   cache_dir: ~ # default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)",
@@ -199,13 +200,13 @@ checkpoint:
 
 
 eval:
-  path: ~/dante/code_to_text/summarization/data-mmap/c/seq2seq/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
-  result_path: ~/dante/c/ 
+  path: ~/dante2/code_to_text/summarization/data-mmap/c/seq2seq/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
+  result_path: ~/dante2/c/ 
   remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE tokens before scoring (can be set to sentencepiece)'
   quiet: 0 # ', action='store_true', help='only print final scores'
   model_overrides: '{}' # default="{}", type=str, metavar='DICT', help='a dictionary used to override model args at generation '
 
-  max_sentences: 16 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
+  max_sentences: 64 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
   beam: 1 # ', default=5, type=int, metavar='N', help='beam size')
   nbest: 1 # ', default=1, type=int, metavar='N', help='number of hypotheses to output')
   max_len_a: 0 #', default=0, type=float, metavar='N', help=('generate sequences of maximum length ax + b, where x is the source length'))

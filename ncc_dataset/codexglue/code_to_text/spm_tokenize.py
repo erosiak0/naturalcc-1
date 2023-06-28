@@ -31,7 +31,7 @@ except:
     tokenizer = spm.SentencePieceProcessor(SPM_FILE)
 
 
-def tokenization(in_file, out_file, lang, attr, start=0, end=-1, ):
+def tokenization(in_file, out_file, lang, attr, start=1, end=0, ):
     with file_io.open(in_file, "r") as reader, file_io.open(out_file, 'w') as writer:
         reader.seek(start)
         line = file_io.safe_readline(reader)

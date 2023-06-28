@@ -23,6 +23,7 @@ class AttentionLayer(nn.Module):
         # source_hids: srclen x bsz x source_embed_dim
 
         # x: bsz x source_embed_dim
+        
         x = self.input_proj(input)
 
         # compute attention
@@ -39,7 +40,6 @@ class AttentionLayer(nn.Module):
 
         # sum weighted sources
         x = (attn_scores.unsqueeze(2) * source_hids).sum(dim=0)
-
         x = torch.tanh(self.output_proj(torch.cat((x, input), dim=1)))
         return x, attn_scores
 

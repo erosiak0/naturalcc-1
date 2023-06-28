@@ -1,7 +1,7 @@
 import math
 import os
 import random
-
+import numpy as np
 import torch
 
 from ncc import LOGGER
@@ -48,7 +48,31 @@ def train(args, trainer, task, epoch_itr):
     valid_subsets = args['dataset']['valid_subset'].split(',')
     max_update = args['optimization']['max_update'] or math.inf
     for samples in progress:
+        # print(samples)
+        # print(f"samples[0].keys(): {samples[0].keys()}, {samples[0]['net_input']['prev_output_tokens']}")
+        # prev_output_tokens_id = np.where(samples[0]['net_input']["prev_output_tokens"] < 0, 1, samples[0]['net_input']["prev_output_tokens"])
+        # print(prev_output_tokens_id)
+        # samples[0]['net_input']["prev_output_tokens"][prev_output_tokens_id] = 1
+        
+        # target_id = np.where(np.array(samples[0]["target"]) < 0, 1, np.array(samples[0]["target"]))
+        # samples[0]["target"][target_id] = 1
+
+        # if -1 in samples[0]['net_input']["prev_output_tokens"]:
+        #     continue
+        samples[0]['net_input']["prev_output_tokens"][samples[0]['net_input']["prev_output_tokens"] == -1] = 0
+        # if -1 in samples[0]["target"]:
+        #     continue
+        samples[0]["target"][samples[0]["target"] == -1] = 0
+        # print(f"len(samples[0]): {len(samples[0])}")
+        # for key in samples[0].keys():
+        #     print(f"keys: {key}")
+        #     print(samples[0][key])
+        # print(samples)
+        
+        
         with metrics.aggregate('train_inner'):
+            # print(samples)
+            
             log_output = trainer.train_step(samples)
             if log_output is None:  # OOM, overflow, ...
                 continue
@@ -123,12 +147,22 @@ def validate(args, trainer, task, epoch_itr, subsets):
         # don't pollute other aggregators (e.g., train meters)
         with metrics.aggregate(new_root=True) as agg:
             for sample in progress:
+                # print(f"sample_valid: {sample['net_input']['src_tokens']}, {sample['target']}")
+                # if -1 in sample['net_input']["prev_output_tokens"]:
+                #     break
+                sample['net_input']["prev_output_tokens"][sample['net_input']["prev_output_tokens"] == -1] = 0
+                # if -1 in sample["target"]:
+                #     break
+                # if -1 in sample['net_input']["prev_output_tokens"]:
+                #     continue
+                sample['net_input']["prev_output_tokens"][sample['net_input']["prev_output_tokens"] == -1] = 0
+                # if -1 in sample["target"]:
+                #     continue
                 trainer.valid_step(sample)
 
         # log validation stats
         stats = get_valid_stats(args, trainer, agg.get_smoothed_values())
         progress.print(stats, tag=subset, step=trainer.get_num_updates())
-
         valid_losses.append(stats[args['checkpoint']['best_checkpoint_metric']])
 
     return valid_losses

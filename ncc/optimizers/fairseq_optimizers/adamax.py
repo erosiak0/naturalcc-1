@@ -39,11 +39,12 @@ class NccAdamax(NccOptimizer):
         different learning rate.
         """
         return {
-            'lr': self.args.lr[0],
-            'betas': eval(self.args.adamax_betas),
-            'eps': self.args.adamax_eps,
-            'weight_decay': self.args.weight_decay,
-            'bias_correction': not self.args.no_bias_correction,
+
+            'lr': 1e-4,
+            'betas': eval('(0.9, 0.999)'),
+            'eps': 1e-8,
+            'weight_decay': 0.0,
+            'bias_correction': 0,
         }
 
 

@@ -4,11 +4,13 @@ MODES = ['train', 'valid', 'test']
 
 RAW = 'raw'
 ATTRIBUTES = 'attributes'
-LANGUAGES = ['c', 'ruby', 'python', 'java', 'go', 'php', 'javascript']
+LANGUAGES = ['c'] #['ruby', 'python', 'java', 'go', 'php', 'javascript'] #['c', 'ruby', 'python', 'java', 'go', 'php', 'javascript']
 PAD = '[PAD]'
 BOS = "<s>"
 EOS = "</s>"
-UNK = "[UNK]"
+# UNK = "[UNK]"
+UNK = "<unk>"
+
 
 # word-level bpe
 SOW = '<sow>'
