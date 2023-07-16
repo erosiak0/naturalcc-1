@@ -19,7 +19,7 @@ BPE_DIR = __BPE_DIR__
 LIBS_DIR = __TREE_SITTER_LIBS_DIR__
 
 LANGUAGES = ['python']
-MODES = ['train', 'dev', 'test']
+MODES = ['train', 'valid', 'test']
 
 RECURSION_DEPTH = 999  # dfs recursion limitation
 # path modality

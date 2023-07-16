@@ -37,7 +37,7 @@ PLZ, launch pycharm at {your pycharm directory}/pycharm.sh.
 # __NCC_DIR__ = '/data/ncc_data'
 # wtf?
 __TREE_SITTER_LIBS_DIR__ = os.path.join(__NCC_DIR__, 'tree_sitter_libs')
-__BPE_DIR__ = os.path.join(__NCC_DIR__, 'byte_pair_encoding_roberta')
+__BPE_DIR__ = os.path.join(__NCC_DIR__, 'byte_pair_encoding')
 __JAVA_HOME__ = os.path.join(os.getenv('JAVA_HOME', '/usr'), 'bin/java')
 
 LOGGER.debug(f"Host name: {__HOSTNAME__}; user name: {__USERNAME__}")

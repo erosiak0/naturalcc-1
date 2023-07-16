@@ -177,7 +177,9 @@ class NccTransformerEncoder(NccEncoder):
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
             dropout_probability = random.uniform(0, 1)
             if not self.training or (dropout_probability > self.encoder_layerdrop):
-                x = layer(x, src_mask=None, src_key_padding_mask=encoder_padding_mask)
+                # x = layer(x, src_mask=None, src_key_padding_mask=encoder_padding_mask)
+                x = layer(x, encoder_padding_mask=None, attn_mask=encoder_padding_mask)  
+                
             if not last_state_only:
                 encoder_states.append(x)
 

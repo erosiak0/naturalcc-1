@@ -45,7 +45,7 @@ dataset:
   fixed_validation_seed: ~ # default=None, type=int, metavar='N', help='specified random seed for validation'
   disable_validation: 0 # action='store_true',help='disable validation'
   max_tokens_valid: ~ # type=int, metavar='N', help='maximum number of tokens in a validation batch (defaults to --max-tokens)'
-  max_sentences_valid: 128 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
+  max_sentences_valid: 32 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
   curriculum: 0 # default=0, type=int, metavar='N', help='don\'t shuffle batches for first N epochs'
   gen_subset: test # default='test', metavar='SPLIT', help='data subset to generate (train, valid, test)'
   num_shards: 1 # default=1, type=int, metavar='N', help='shard generation over N shards'

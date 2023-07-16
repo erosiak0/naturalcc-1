@@ -32,10 +32,10 @@ common:
   server_port: '' # type=str, default="", help="For distant debugging."
 
 dataset:
-  num_workers: 3 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
+  num_workers: 1 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
   skip_invalid_size_inputs_valid_test: 1 # action='store_true', help='ignore too long or too short lines in valid and test set'
   max_tokens: ~ # type=int, metavar='N', help='maximum number of tokens in a batch'
-  max_sentences: 16 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
+  max_sentences: 64 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
   required_batch_size_multiple: 1 # default=8, type=int, metavar='N', help='batch size will be a multiplier of this value'
 #  dataset_impl: raw # choices=get_available_dataset_impl(), help='output dataset implementation'
   dataset_impl: mmap # choices=get_available_dataset_impl(), help='output dataset implementation'
@@ -76,11 +76,11 @@ distributed_training:
 
 
 task:
-  data: ~/ncc_data/codexglue/code_to_text/summarization/subtokenization/data-mmap/python # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
+  data: ~/codexglue/code_to_text/summarization/data-mmap/python # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
 
   # for summarization
-  source_lang: code_tokens
-  target_lang: docstring_tokens
+  source_lang: code.spm
+  target_lang: docstring.spm
   load_alignments: 0 #', action='store_true', help='load the binarized alignments'
   left_pad_source: 0 #', default='True', type=str, metavar='BOOL', help='pad the source on the left'
   left_pad_target: 0 #', default='False', tydecoder_out_embed_dimpe=str, metavar='BOOL', help='pad the target on the left'
@@ -118,8 +118,8 @@ model:
   encoder_attention_heads: 8 # 12 type=int, metavar='N', help='num encoder attention heads'
   encoder_normalize_before: 0 # action='store_true', help='apply layernorm before each encoder block'
 
-  encoder_position_encoding_version: ncc_learned
-  decoder_position_encoding_version: ncc_learned
+  encoder_position_encoding_version: ncc_relative
+  decoder_position_encoding_version: ncc_relative
   multihead_attention_version: ncc # 1) pytorch (built-in), 2) ncc; multi-head attention
 
   decoder_embed_path: '' # type=str, metavar='STR', help='path to pre-trained decoder embedding'
@@ -225,7 +225,7 @@ checkpoint:
   best_checkpoint_metric: bleu # type=str, default='loss', help='metric to use for saving "best" checkpoints'
   maximize_best_checkpoint_metric: 1 # action='store_true', help='select the largest metric value for saving "best" checkpoints'
   patience: -1 # type=int, default=-1, metavar='N', help=('early stop training if valid performance doesn\'t improve for N consecutive validation runs; note that this is influenced by --validate-interval')
-  save_dir: ~/ncc_data/codexglue/code_to_text/summarization/subtokenization/data-mmap/python/relative_transformer/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
+  save_dir: ~/codexglue/code_to_text/summarization/data-mmap/python/relative_transformer/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
   should_continue: 0 # action="store_true", help="Whether to continue from latest checkpoint in output_dir"
   model_name_or_path: ~ # default=None, type=str, help="The model checkpoint for weights initialization. Leave None if you want to train a model from scratch.",
   cache_dir: ~ # default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)",
@@ -237,7 +237,7 @@ checkpoint:
 
 
 eval:
-  path: ~/ncc_data/codexglue/code_to_text/summarization/subtokenization/data-mmap/python/relative_transformer/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
+  path: ~/codexglue/code_to_text/summarization/data-mmap/python/relative_transformer/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
   remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE tokens before scoring (can be set to sentencepiece)'
   quiet: 0 # ', action='store_true', help='only print final scores'
   results_path: ~ # ', metavar='RESDIR', type=str, default=None, help='path to save eval results (optional)"'

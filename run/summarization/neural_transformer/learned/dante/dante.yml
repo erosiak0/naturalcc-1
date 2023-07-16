@@ -32,10 +32,10 @@ common:
   server_port: '' # type=str, default="", help="For distant debugging."
 
 dataset:
-  num_workers: 1 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
+  num_workers: 3 # default=1, type=int, metavar='N', help='how many subprocesses to use for data loading'
   skip_invalid_size_inputs_valid_test: 1 # action='store_true', help='ignore too long or too short lines in valid and test set'
   max_tokens: ~ # type=int, metavar='N', help='maximum number of tokens in a batch'
-  max_sentences: 16 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
+  max_sentences: 32 # default = 512 # '--batch-size', type=int, metavar='N', help='maximum number of sentences in a batch'
   required_batch_size_multiple: 1 # default=8, type=int, metavar='N', help='batch size will be a multiplier of this value'
 #  dataset_impl: raw # choices=get_available_dataset_impl(), help='output dataset implementation'
   dataset_impl: mmap # choices=get_available_dataset_impl(), help='output dataset implementation'
@@ -45,7 +45,7 @@ dataset:
   fixed_validation_seed: ~ # default=None, type=int, metavar='N', help='specified random seed for validation'
   disable_validation: 0 # action='store_true',help='disable validation'
   max_tokens_valid: ~ # type=int, metavar='N', help='maximum number of tokens in a validation batch (defaults to --max-tokens)'
-  max_sentences_valid: 16 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
+  max_sentences_valid: 32 # type=int, metavar='N', help='maximum number of sentences in a validation batch (defaults to --max-sentences)'
   curriculum: 0 # default=0, type=int, metavar='N', help='don\'t shuffle batches for first N epochs'
   gen_subset: test # default='test', metavar='SPLIT', help='data subset to generate (train, valid, test)'
   num_shards: 1 # default=1, type=int, metavar='N', help='shard generation over N shards'
@@ -60,7 +60,7 @@ distributed_training:
   device_id: 0 # '--local_rank', default=0, type=int, help='which GPU to use (usually configured automatically)'
   pipeline_model_parallel: 0 # '--pipeline-model-parallel', default=False, action='store_true', help='if set, use pipeline model parallelism across GPUs'
   distributed_no_spawn: 0 # action='store_true', help='do not spawn multiple processes even if multiple GPUs are visible'
-  ddp_backend: no_c10d # default='c10d', type=str, choices=['c10d', 'no_c10d'], help='DistributedDataParallel backend'
+  ddp_backend: c10d # default='c10d', type=str, choices=['c10d', 'no_c10d'], help='DistributedDataParallel backend'
   bucket_cap_mb: 25 # default=25, type=int, metavar='MB', help='bucket size for reduction'
   fix_batches_to_gpus: ~ # action='store_true', help='don\'t shuffle batches between GPUs; this reduces overall randomness and may affect precision but avoids the cost of re-reading the data'
   find_unused_parameters: 0 # default=False, action='store_true', help='disable unused parameter detection (not applicable to no_c10d ddp-backend'
@@ -76,55 +76,28 @@ distributed_training:
 
 
 task:
-  data: ~/codexglue/code_to_text/summarization/data-mmap/python # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
-
-  # # for summarization
-  # # source_lang: code_tokens
-  # # target_lang: docstring_tokens
-  # source_lang: code.spm
-  # target_lang: docstring.spm
-  # load_alignments: 0 #', action='store_true', help='load the binarized alignments'
-  # left_pad_source: 0 #', default='True', type=str, metavar='BOOL', help='pad the source on the left'
-  # left_pad_target: 0 #', default='False', tydecoder_out_embed_dimpe=str, metavar='BOOL', help='pad the target on the left'
-  # max_source_positions: 512 #', default=1024, type=int, metavar='N', help='max number of tokens in the source sequence'
-  # max_target_positions: 32 #', default=1024, type=int, metavar='N', help='max number of tokens in the target sequence'
-  # upsample_primary: 1 #', default=1, type=int, help='amount to upsample primary dataset'
-  # truncate_source: 1 #', action='store_true', default=False, help='truncate source to max-source-positions'
-  # truncate_target: 1 #', action='store_true', default=False, help='truncate source to max-target-positions'
-
-  # # options for reporting BLEU during validation
-  # eval_bleu: 1 #action='store_true', help='evaluation with BLEU scores'
-  # eval_bleu_detok: space #', type=str, default="space", help='detokenizer before computing BLEU (e.g., "moses"); required if using --eval-bleu; use "space" to disable detokenization; see fairseq.data.encoders for other options'
-  # eval_bleu_detok_args: ~ #', type=str, metavar='JSON', help='args for building the tokenizer, if needed'
-  # eval_tokenized_bleu: 0 #', action='store_true', default=False, help='if setting, we compute tokenized BLEU instead of sacrebleu'
-  # eval_bleu_remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE before computing BLEU'
-  # eval_bleu_args: ~ #', type=str, metavar='JSON', help='generation args for BLUE scoring, e.g., \'{"beam": 4, "lenpen": 0.6}\''
-  # eval_bleu_print_samples: 0 #', action='store_true', help='print sample generations during validation'
+  data: ~/dante_wan/code_to_text/summarization/data-mmap # help='colon separated path to data directories list, will be iterated upon during epochs in round-robin manner'
 
   # for summarization
-  source_lang: code.spm
-  target_lang: docstring.spm
+  source_lang: code_tokens
+  target_lang: docstring_tokens
   load_alignments: 0 #', action='store_true', help='load the binarized alignments'
   left_pad_source: 0 #', default='True', type=str, metavar='BOOL', help='pad the source on the left'
   left_pad_target: 0 #', default='False', tydecoder_out_embed_dimpe=str, metavar='BOOL', help='pad the target on the left'
-  max_source_positions: 512 #', default=1024, type=int, metavar='N', help='max number of tokens in the source sequence'
-  max_target_positions: 30 #', default=1024, type=int, metavar='N', help='max number of tokens in the target sequence'
+  max_source_positions: 400 #', default=1024, type=int, metavar='N', help='max number of tokens in the source sequence'
+  max_target_positions: 32 #', default=1024, type=int, metavar='N', help='max number of tokens in the target sequence'
   upsample_primary: 1 #', default=1, type=int, help='amount to upsample primary dataset'
-  truncate_source: 1 #', action='store_true', default=False, help='truncate source to max-source-positions'
-  truncate_target: 1 #', action='store_true', default=False, help='truncate target to max-target-positions'
-  append_eos_to_target: 1 # default=True, append eos to the end of target sentence for summarization task
+  truncate_source: 5 #', action='store_true', default=False, help='truncate source to max-source-positions'
+  truncate_target: 5 #', action='store_true', default=False, help='truncate source to max-target-positions'
 
   # options for reporting BLEU during validation
   eval_bleu: 1 #action='store_true', help='evaluation with BLEU scores'
-  eval_bleu_detok: sentencepiece #', type=str, default="space", help='detokenizer before computing BLEU (e.g., "moses"); required if using --eval-bleu; use "space" to disable detokenization; see fairseq.data.encoders for other options'
-  eval_bleu_detok_args: #', type=str, metavar='JSON', help='args for building the tokenizer, if needed'
-    sentencepiece_vocab: ~/byte_pair_encoding/csn/csn.spm.model
+  eval_bleu_detok: space #', type=str, default="space", help='detokenizer before computing BLEU (e.g., "moses"); required if using --eval-bleu; use "space" to disable detokenization; see fairseq.data.encoders for other options'
+  eval_bleu_detok_args: ~ #', type=str, metavar='JSON', help='args for building the tokenizer, if needed'
   eval_tokenized_bleu: 0 #', action='store_true', default=False, help='if setting, we compute tokenized BLEU instead of sacrebleu'
   eval_bleu_remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE before computing BLEU'
   eval_bleu_args: ~ #', type=str, metavar='JSON', help='generation args for BLUE scoring, e.g., \'{"beam": 4, "lenpen": 0.6}\''
   eval_bleu_print_samples: 1 #', action='store_true', help='print sample generations during validation'
-  eval_with_sacrebleu: 0
-
 
 model:
   arch: neural_transformer
@@ -191,7 +164,7 @@ model:
   encoder_dropout_out: 0.2 #', type=float, metavar='D', help='dropout probability for encoder output'
   decoder_dropout_in: 0.2 #' type=float, metavar='D', help='dropout probability for decoder input embedding'
   decoder_dropout_out: 0.2 #', type=float, metavar='D', help='dropout probability for decoder output'
-  max_source_positions: 512
+  max_source_positions: 400
   max_target_positions: 32
 
 optimization:
@@ -252,7 +225,7 @@ checkpoint:
   best_checkpoint_metric: bleu # type=str, default='loss', help='metric to use for saving "best" checkpoints'
   maximize_best_checkpoint_metric: 1 # action='store_true', help='select the largest metric value for saving "best" checkpoints'
   patience: -1 # type=int, default=-1, metavar='N', help=('early stop training if valid performance doesn\'t improve for N consecutive validation runs; note that this is influenced by --validate-interval')
-  save_dir: ~/codexglue/code_to_text/summarization/data-mmap/python/relative_transformer/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
+  save_dir: ~/dante_wan/code_to_text/summarization/data-mmap/relative_transformer/checkpoints # type=str, required=True, help="The output directory where the model predictions and checkpoints will be written.",
   should_continue: 0 # action="store_true", help="Whether to continue from latest checkpoint in output_dir"
   model_name_or_path: ~ # default=None, type=str, help="The model checkpoint for weights initialization. Leave None if you want to train a model from scratch.",
   cache_dir: ~ # default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)",
@@ -264,23 +237,23 @@ checkpoint:
 
 
 eval:
-  path: ~/codexglue/code_to_text/summarization/data-mmap/python/relative_transformer/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
+  path: ~/dante_wan/code_to_text/summarization/data-mmap/relative_transformer/checkpoints/checkpoint_best.pt # , metavar='FILE', help='path(s) to model file(s), colon separated'
   remove_bpe: ~ # ', nargs='?', const='@@ ', default=None, help='remove BPE tokens before scoring (can be set to sentencepiece)'
   quiet: 0 # ', action='store_true', help='only print final scores'
-  results_path: ~ # ', metavar='RESDIR', type=str, default=None, help='path to save eval results (optional)"'
+  results_path: ~/dante/ # ', metavar='RESDIR', type=str, default=None, help='path to save eval results (optional)"'
   model_overrides: '{}' # default="{}", type=str, metavar='DICT', help='a dictionary used to override model args at generation '
 
-  max_sentences: 512 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
-  beam: 1 # ', default=5, type=int, metavar='N', help='beam size')
-  nbest: 1 # ', default=1, type=int, metavar='N', help='number of hypotheses to output')
+  max_sentences: 32 # evaluation batch size, because while evaluation, it will not cost much ram, we can increase the batch size
+  beam: 5 # ', default=5, type=int, metavar='N', help='beam size')
+  nbest: 31 # ', default=1, type=int, metavar='N', help='number of hypotheses to output')
   max_len_a: 0 #', default=0, type=float, metavar='N', help=('generate sequences of maximum length ax + b, where x is the source length'))
   max_len_b: 30 #', default=200, type=int, metavar='N', help=('generate sequences of maximum length ax + b, where x is the source length'))
-  min_len: 1 # ', default=1, type=float, metavar='N', help=('minimum generation length'))
+  min_len: 10 # ', default=1, type=float, metavar='N', help=('minimum generation length'))
   match_source_len: 0 #', default=False, action='store_true', help=('generations should match the source length'))
   no_early_stop: 1 # ', action='store_true', help='deprecated')
   unnormalized: 0 # ', action='store_true', help='compare unnormalized hypothesis scores')
   no_beamable_mm: 0 # ', action='store_true', help='don\'t use BeamableMM in attention layers')
-  lenpen: 1 # ', default=1, type=float, help='length penalty: <1.0 favors shorter, >1.0 favors longer sentences')
+  lenpen: 1.3 # ', default=1, type=float, help='length penalty: <1.0 favors shorter, >1.0 favors longer sentences')
   unkpen: 0 # ', default=0, type=float, help='unknown word penalty: <0 produces more unks, >0 produces fewer')
   replace_unk: ~ # ', nargs='?', const=True, default=None, help='perform unknown replacement (optionally with alignment dictionary)')
   sacrebleu: 0 # ', action='store_true', help='score with sacrebleu')
@@ -294,7 +267,7 @@ eval:
   diverse_beam_groups: -1 # ', default=-1, type=int, metavar='N', help='number of groups for Diverse Beam Search')
   diverse_beam_strength: 0.5 # ', default=0.5, type=float, metavar='N', help='strength of diversity penalty for Diverse Beam Search')
   diversity_rate: -1.0 # ', default=-1.0, type=float, metavar='N', help='strength of diversity penalty for Diverse Siblings Search')
-  print_alignment: 0 # ', action='store_true', help='if set, uses attention feedback to compute and print alignment to source tokens')
+  print_alignment: 1 # ', action='store_true', help='if set, uses attention feedback to compute and print alignment to source tokens')
   print_step: 0 # ', action='store_true')
   # arguments for iterative refinement generator
   iter_decode_eos_penalty: 0.0 # ', default=0.0, type=float, metavar='N', help='if > 0.0, it penalized early-stopping in decoding.')
